@@ -30,7 +30,7 @@ public class Bank {
 
 	}	
 	
-	public void printStatement(int accountNumber) {
+	public void printStatement(int accountNumber) throws NoSuchAccountException{
 
 		  for(Account acc: accounts) {
 
@@ -48,9 +48,11 @@ public class Bank {
 
 		  }
 
+		  throw new NoSuchAccountException("Account not found.");
+
 	}
 	
-	public double getAccountBalance(int accountNumber) {
+	public double getAccountBalance(int accountNumber) throws NoSuchAccountException{
 		
 		for(Account acc: accounts) {
 
@@ -59,17 +61,15 @@ public class Bank {
 			}
 
 		}
-		return 0;
+		throw new NoSuchAccountException("Account not found.");
 	}
 	
-	public String withdraw(int accountNumber, double amount) {
+	public String withdraw(int accountNumber, double amount) throws AccountClosedException, InsufficientBalanceException,NoSuchAccountException{
 
 		for(Account acc: accounts) {
 
 			if(acc.getAccountNumber() == accountNumber) {
-				if(acc.getAccountStatus().equals("Closed")&&(acc.getBalance()<=0)){
-					return "Account closed, only deposits allowed.";
-				}
+				if(acc.getAccountStatus().equals("Closed")&&(acc.getBalance()<=0))throw new AccountClosedException("Account closed.");
 
 				else if((acc.getBalance()+acc.getOverDraft()) > amount){
 					Transactions newStatement = new Transactions(transactionID, "debit", amount, accountNumber);
@@ -79,25 +79,20 @@ public class Bank {
 					acc.setBalance(amount);
 				return "Withdraw Successful, new balance is " + amount;
 				}
-				else{
-					return "Withdraw failed, the balance is $" + acc.getBalance();
-				}
+				else throw new InsufficientBalanceException("Withdrawal failed, insufficient funds.");
 			}
 
 		}
-
-		return "Account not found";
+		throw new NoSuchAccountException("Account not found.");
 
     }
    	
-	public String deposit(int accountNumber, double amount){
+	public String deposit(int accountNumber, double amount) throws AccountClosedException,NoSuchAccountException{
 
 		for(Account acc: accounts) {
 
 			if(acc.getAccountNumber() == accountNumber) {
-				if(acc.getAccountStatus().equals("Closed")&&(acc.getBalance()>=0)){
-					return "Account closed, only withdrawals allowed.";
-				}
+				if(acc.getAccountStatus().equals("Closed")&&(acc.getBalance()>=0)) throw new AccountClosedException("Account closed.");
 				else if(amount>0){
 					Transactions newStatement = new Transactions(transactionID, "credit", amount, accountNumber);
 					transactions.add(newStatement);
@@ -112,12 +107,11 @@ public class Bank {
 			}
 
 		}
-
-		return "Account not found";
+		throw new NoSuchAccountException("Account not found.");
 	
     } 
 
-	public String closeAccount(int accountNumber) {
+	public String closeAccount(int accountNumber) throws NoSuchAccountException{
 
 		for(Account acc: accounts) {
 			
@@ -135,7 +129,7 @@ public class Bank {
 				else{return "Account closed, no deposits or withdrawals allowed.";}
 			}
 		}
-		return "Account not found.";
+		throw new NoSuchAccountException("Account not found.");
 
     }
 

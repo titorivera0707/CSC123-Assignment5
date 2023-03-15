@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class App {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchAccountException{
         Scanner keyboard = new Scanner(System.in);
         int userChoice = 0;
 
@@ -60,7 +60,6 @@ public class App {
                     newBank.openAccount(fName, lName, SSN, overdraft, accountType);
                 }
                 if(userChoice == 3){
-
                     System.out.println(newBank);
                     
                 }
